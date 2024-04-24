@@ -13,6 +13,13 @@ if ($overwriteName -eq "") {
     $overwriteName = ($fileNameFull -split "\.")[0]
 }
 
-$wc = New-Object System.Net.WebClient
+try {
+    $wc = New-Object System.Net.WebClient
 
-$wc.DownloadFile($url, "C:\temp\$fileNameFull")
+    $wc.DownloadFile($url, "C:\temp\$fileNameFull")
+} catch {
+    Write-Host "An error occurred: $_" -ForegroundColor Red
+}
+
+
+Write-Host `n$_ -ForegroundColor Cyan
