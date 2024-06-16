@@ -1,7 +1,7 @@
-#powershell.exe -File "____________.ps1" --url "https://i.4cdn.org/hr/1704332058600653.jpg" --name "building-by-water"
+#powershell.exe -File "____________.ps1" --url "https://imgs.xkcd.com/comics/tech_support_cheat_sheet.png" --name "xkcd-it-support-comic"
 
 param (
-    [string] $url = "https://i.4cdn.org/hr/1704332058600653.jpg",
+    [string] $url = "https://imgs.xkcd.com/comics/tech_support_cheat_sheet.png",
     [Parameter(ParameterSetName="name")]
     [string] $overwriteName = ""
 )
