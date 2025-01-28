@@ -9,6 +9,7 @@ Get-ADUser -Filter 'SamAccountName -like "*__username__*"' -Properties memberof,
 
 # Search for group by name
 Get-ADGroup -Filter {Name -like 'ES_SADLC_*'}
+Get-ADGroup -Filter {Name -like 'ES_SADLC_*'} | Select-Object Name
 
 # Get Groups associated with User
 Get-ADPrincipalGroupMembership __username__ | Select-Object Name
