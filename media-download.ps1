@@ -3,20 +3,20 @@
 param (
     [string] $url = "https://imgs.xkcd.com/comics/tech_support_cheat_sheet.png",
     [Parameter(ParameterSetName="name")]
-    [string] $overwriteName = ""
+    [string] $overwrite_name = ""
 )
 
-$fileNameFull = ($url -split "/")[-1]
-# $fileName, $fileExtention = ($fileNameFull -split "\.")[0, -1]
+$file_name_full = ($url -split "/")[-1]
+# $file_name, $file_extention = ($file_name_full -split "\.")[0, -1]
 
-if ($overwriteName -eq "") {
-    $overwriteName = ($fileNameFull -split "\.")[0]
+if ($overwrite_name -eq "") {
+    $overwrite_name = ($file_name_full -split "\.")[0]
 }
 
 try {
     $wc = New-Object System.Net.WebClient
 
-    $wc.DownloadFile($url, "C:\temp\$fileNameFull")
+    $wc.DownloadFile($url, "C:\temp\$file_name_full")
 } catch {
     Write-Host "An error occurred: $_" -ForegroundColor Red
 }

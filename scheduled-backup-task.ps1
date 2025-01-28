@@ -7,39 +7,39 @@
 
 # ----- INPUTS & VARIABLES -----
 
-[string] $SourcePath = Read-Host "Enter Full Path Of Folder to Backup"
-[string] $SourceName = $SourcePath.Split("\") | Select-Object -Last 1
+[string] $source_path = Read-Host "Enter Full Path Of Folder to Backup"
+[string] $source_name = $source_path.Split("\") | Select-Object -Last 1
 
-[string] $BackupsPath = "$env:USERPROFILE\Backups"
-[string] $TargetPath = "$BackupsPath\$SourceName\$UnixTimeStamp"
+[string] $backups_path = "$env:USERPROFILE\Backups"
+[string] $target_path = "$backups_path\$source_name\$UnixTimeStamp"
 
-[string] $TaskScriptsPath = "$env:USERPROFILE\ScheduledTaskScripts\"
-[string] $TaskScriptsFileName = "FolderBackupScript-$SourceName.ps1"
+[string] $task_scripts_path = "$env:USERPROFILE\ScheduledTaskScripts\"
+[string] $task_scripts_file_name = "FolderBackupScript-$source_name.ps1"
 
 
 # ----- Backup Code -----
 
 $BackupCodeAsText = @"
     [int] `$UnixTimeStamp = (Get-Date -UFormat %s -Millisecond 0)
-    [string] `$TargetPath = "$BackupsPath\$SourceName\`$UnixTimeStamp"
+    [string] `$target_path = "$backups_path\$source_name\`$UnixTimeStamp"
 
-    New-Item -Path "`$TargetPath" -ItemType Directory
-    Copy-item -Force -Recurse "$SourcePath" -Destination "`$TargetPath"
+    New-Item -Path "`$target_path" -ItemType Directory
+    Copy-item -Force -Recurse "$source_path" -Destination "`$target_path"
 "@
 
 
 # ----- Create Backup Script File -----
 
 New-Item -Force -ItemType File `
-    -Path $TaskScriptsPath `
-    -Name $TaskScriptsFileName `
+    -Path $task_scripts_path `
+    -Name $task_scripts_file_name `
     -Value $BackupCodeAsText
 
 
 # ----- Create Task -----
 
 # Requires execute as Admin to set principal below
-$Actions = New-ScheduledTaskAction -Execute "PowerShell.exe" -Argument "-ExecutionPolicy Bypass -File `"$TaskScriptsPath$TaskScriptsFileName`""
+$Actions = New-ScheduledTaskAction -Execute "PowerShell.exe" -Argument "-ExecutionPolicy Bypass -File `"$task_scripts_path$task_scripts_file_name`""
 $Trigger = New-ScheduledTaskTrigger -Daily -At "12:00 PM"
 $Principal = New-ScheduledTaskPrincipal -UserID "NT AUTHORITY\SYSTEM" -LogonType ServiceAccount -RunLevel Highest
 $Settings = New-ScheduledTaskSettingsSet -StartWhenAvailable -WakeToRun -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries
