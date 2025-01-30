@@ -6,6 +6,7 @@ Get-WindowsCapability -Online | Where-Object { $_.Name -like "Rsat.ActiveDirecto
 Get-ADUser -Filter 'SamAccountName -like "*__username__*"' -Properties *
 Get-ADUser -Filter 'SamAccountName -like "*__username__*"' -Properties memberof,Created
 Get-ADUser -Filter 'SamAccountName -like "*__username__*"' -Properties memberof,Created | Select-Object Enabled,SamAccountName,Created,DistinguishedName
+Get-ADUser -Filter 'SamAccountName -like "*__username__*"' -Properties Created | Select-Object Created | Select-String  -Pattern "2025"
 
 # Search for group by name
 Get-ADGroup -Filter {Name -like 'ES_SADLC_*'}
