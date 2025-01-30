@@ -1,0 +1,6 @@
+# Start new admin PS session in current working directory
+if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
+    Write-Host "Running as non-administrator, restarting as administrator..."
+    $powershell = if ($PSVersionTable.PSVersion.Major -gt 5) { "pwsh.exe" } else { "powershell.exe" }
+    Start-Process $powershell -WorkingDirectory (Get-Location) -Verb RunAs -Wait "-NoProfile -ExecutionPolicy Bypass"; exit
+}
