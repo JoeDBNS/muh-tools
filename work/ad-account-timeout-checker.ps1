@@ -1,3 +1,5 @@
+Get-ADDomainController -Discover -ForceDiscover
+
 $accounts = @(
     "davisj38"
 )
