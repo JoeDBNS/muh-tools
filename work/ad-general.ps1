@@ -18,3 +18,11 @@ Get-ADUser __username__ -Properties memberof | Select-Object -Expand memberof
 
 # Get Accounts that are part of a Group
 Get-ADGroupMember -Identity __group__ | Select-Object SamAccountName
+
+
+
+# Test credentials
+$password = ConvertTo-SecureString "_____________" -AsPlainText -Force
+$credentials = New-Object System.Management.Automation.PSCredential ("SOM\____________", $password)
+Start-Process -FilePath "C:\Temp\do_nothing.exe" -Credential $credentials -WorkingDirectory 'C:\'
+
