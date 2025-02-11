@@ -1,0 +1,33 @@
+User Management:
+
+	logged in users:
+		users
+
+	all local users:
+		cat /etc/passwd
+
+	all groups:
+		groups
+
+	groups that a user is assigned to:
+		groups [username]
+
+
+
+
+
+
+File Management:
+
+	touch [new_file_name.extension] && nano [new_file_name.extension]
+
+
+
+
+
+
+Remote Management:
+
+	scp [local_file_name] [username]@[host_ip]:[directory *starting from root]
+
+	vim scp://[username]@[host_ip]/[directory *starting from root]
