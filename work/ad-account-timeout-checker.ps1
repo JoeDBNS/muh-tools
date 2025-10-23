@@ -109,7 +109,11 @@ foreach ($account_name in $accounts.Keys) {
         $text_color = "Red"
     }
 
-    Write-Host ("" + $accounts[$account_name] + "`t" + $account_last_logons[$account_name] + "`t" + $account_name) -ForegroundColor $text_color
+    $account_last_logon_as_utc = [DateTime]::Parse($account_last_logons[$account_name])
+    $timezone_eastern = [System.TimeZoneInfo]::FindSystemTimeZoneById("Eastern Standard Time")
+    $account_last_logon_as_et = [System.TimeZoneInfo]::ConvertTimeFromUtc($account_last_logon_as_utc, $timezone_eastern)
+
+    Write-Host ("" + $accounts[$account_name] + "`t" + $account_last_logon_as_et + "`t" + $account_name) -ForegroundColor $text_color
 }
 
 Write-Host "`n"
