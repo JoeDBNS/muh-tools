@@ -38,7 +38,7 @@ foreach ($DomainController in $domain_controllers) {
         }
     }
 
-    Write-Host "`n`n`n`n`n`n`n`n`n`n`n`n`n`n`n"
+    Write-Host "`n`n"
     Write-Host "$current_domain_count of $domain_controllers_count"
     Write-Host $progress_string
     Write-Host "Querying Domain Controller: $($DomainController.HostName)" -ForegroundColor Cyan
@@ -99,7 +99,7 @@ foreach ($DomainController in $domain_controllers) {
 }
 
 
-Write-Host "`n`n`n`n`n`n------------------------------------------------------------------------------------------`n`n`n"
+Write-Host "`n`n`n`n`n`n------------------------------------------------------------------------------------------`n`n`n$datetime_now`n"
 
 
 foreach ($account_name in $accounts.Keys) {
@@ -112,4 +112,4 @@ foreach ($account_name in $accounts.Keys) {
     Write-Host ("" + $accounts[$account_name] + "`t" + $account_last_logons[$account_name] + "`t" + $account_name) -ForegroundColor $text_color
 }
 
-Write-Host "`n`n"
+Write-Host "`n"
