@@ -26,7 +26,7 @@ $day_value_updates = @{}
 $datetime_now = Get-Date
 
 $current_domain_count = 1
-foreach ($DomainController in $domain_controllers) {
+foreach ($domain_controller in $domain_controllers) {
     $progress_string = ""
 
     foreach ($i in 1..$current_domain_count) {
@@ -41,12 +41,12 @@ foreach ($DomainController in $domain_controllers) {
     Write-Host "`n`n"
     Write-Host "$current_domain_count of $domain_controllers_count"
     Write-Host $progress_string
-    Write-Host "Querying Domain Controller: $($DomainController.HostName)" -ForegroundColor Cyan
+    Write-Host "Querying Domain Controller: $($domain_controller.HostName)" -ForegroundColor Cyan
 
     try {
         foreach ($account_name in $account_names) {
             try {
-                $timestamp_account_last_logon = Get-ADUser -Server $DomainController.HostName -Identity $account_name -Properties lastLogon | Select-Object -ExpandProperty lastLogon
+                $timestamp_account_last_logon = Get-ADUser -Server $domain_controller.HostName -Identity $account_name -Properties lastLogon | Select-Object -ExpandProperty lastLogon
                 $datetime_account_last_logon = [DateTime]::FromFileTimeUtc($timestamp_account_last_logon)
 
                 $timespan_compare = New-TimeSpan -Start $datetime_now -End $datetime_account_last_logon
