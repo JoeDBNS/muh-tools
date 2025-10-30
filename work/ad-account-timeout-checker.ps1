@@ -1,13 +1,16 @@
 
+$account_list_json = Get-Content -Path "./work/ad-account-timeout-list.json" -Raw | ConvertFrom-Json
+$account_names = @()
+
+foreach ($item in $account_list_json) {
+    $account_names += $item.username
+}
+
 Import-Module ActiveDirectory
 
 # Get all domain controllers in the domain
 $domain_controllers = Get-ADDomainController -Filter *
 $domain_controllers_count = $domain_controllers.Count
-
-$account_names = @(
-    "davisj38"
-)
 
 $default_last_login_span = -999999
 $accounts = @{}
