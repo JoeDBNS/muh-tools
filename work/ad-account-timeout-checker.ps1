@@ -99,7 +99,7 @@ foreach ($domain_controller in $domain_controllers) {
 Write-Host "`n`n`n`n`n`n------------------------------------------------------------------------------------------`n`n`n$datetime_now`n"
 
 
-foreach ($account_name in $accounts.Keys) {
+foreach ($account_name in $accounts.Keys | Sort-Object) {
     $text_color = "Green"
 
     if (($accounts[$account_name] + 90) -lt 30) {
