@@ -64,8 +64,13 @@ foreach ($domain_controller in $domain_controllers) {
                 }
             }
 
-            $timespan_compare = New-TimeSpan -Start $datetime_now -End $account_latest_timestamp
-            $days_compare = $timespan_compare.Days
+            if ($account_latest_timestamp -ne "") {
+                $timespan_compare = New-TimeSpan -Start $datetime_now -End $account_latest_timestamp
+                $days_compare = $timespan_compare.Days
+            }
+            else {
+                $days_compare = -999999
+            }
 
             if ($accounts[$account_name] -lt $days_compare) {
                 $day_value_updates[$account_name] = $days_compare
