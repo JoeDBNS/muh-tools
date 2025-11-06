@@ -46,53 +46,47 @@ foreach ($domain_controller in $domain_controllers) {
     Write-Host $progress_string
     Write-Host "Querying Domain Controller: $($domain_controller.HostName)" -ForegroundColor Cyan
 
+    # Service Accounts don't have lastLogon but LastlogonTimestamp accuracy is going to rely on the AD Servers and Domain Controllers being in sync.
+    $domain_controller_response = $account_names | Get-ADUser -Server $domain_controller.HostName -Properties lastLogon, LastlogonTimestamp | Select-Object SamAccountName, lastLogon, LastlogonTimestamp
+
     try {
-        foreach ($account_name in $account_names) {
-            try {
-                $timestamp_account_last_logon = Get-ADUser -Server $domain_controller.HostName -Identity $account_name -Properties lastLogon | Select-Object -ExpandProperty lastLogon
-                $datetime_account_last_logon = [DateTime]::FromFileTimeUtc($timestamp_account_last_logon)
+        foreach ($response in $domain_controller_response) {
+            $account_name = $response.SamAccountName.ToLower()
 
-                $timespan_compare = New-TimeSpan -Start $datetime_now -End $datetime_account_last_logon
-                $days_compare = $timespan_compare.Days
-
-                if ($accounts[$account_name] -lt $days_compare) {
-                    $day_value_updates[$account_name] = $days_compare
-                    $account_last_logons[$account_name] = $datetime_account_last_logon
-                    Write-Host ("Update:`t" + $account_name) -ForegroundColor "Blue"
-                }
-                else {
-                    Write-Host ("Done:`t" + $account_name) -ForegroundColor "Green"
+            if ($null -ne $response.lastLogon) {
+                $account_last_logon = [DateTime]::FromFileTimeUtc($response.lastLogon)
+                $account_latest_timestamp = $account_last_logon
+            }
+            else {
+                if ($null -ne $response.LastlogonTimestamp) {
+                    $account_last_logon_timestamp = [DateTime]::FromFileTimeUtc($response.LastlogonTimestamp)
+                    $account_latest_timestamp = $account_last_logon_timestamp
                 }
             }
-            catch {
-                # Service Accounts don't have lastLogon but LastlogonTimestamp accuracy is going to rely on the AD Servers and Domain Controllers being in sync.
-                try {
-                    $timestamp_account_last_logon = Get-ADUser -Server $DomainController.HostName -Identity $account_name -Properties LastlogonTimestamp | Select-Object -ExpandProperty LastlogonTimestamp
-                    $datetime_account_last_logon = [DateTime]::FromFileTimeUtc($timestamp_account_last_logon)
 
-                    $timespan_compare = New-TimeSpan -Start $datetime_now -End $datetime_account_last_logon
-                    $days_compare = $timespan_compare.Days
+            $timespan_compare = New-TimeSpan -Start $datetime_now -End $account_latest_timestamp
+            $days_compare = $timespan_compare.Days
 
-                    if ($accounts[$account_name] -lt $days_compare) {
-                        $day_value_updates[$account_name] = $days_compare
-                        $account_last_logons[$account_name] = $datetime_account_last_logon
-                        Write-Host ("Update:`t" + $account_name) -ForegroundColor "Blue"
-                    }
-                    else {
-                        Write-Host ("Done:`t" + $account_name) -ForegroundColor "Green"
-                    }
-                }
-                catch {
-                    Write-Host ("00`tERROR`t`t`t" + $account_name) -ForegroundColor "Red"
-                }
+            if ($accounts[$account_name] -lt $days_compare) {
+                $day_value_updates[$account_name] = $days_compare
+                $account_last_logons[$account_name] = $account_latest_timestamp
+                Write-Host ("Update:`t" + $account_latest_timestamp + "`t" + $account_name) -ForegroundColor "Blue"
             }
-        }
+            else {
+                Write-Host ("Done:`t" + $account_latest_timestamp + "`t" + $account_name) -ForegroundColor "Green"
+            }
 
-        foreach ($account_name in $day_value_updates.Keys) {
-            $accounts[$account_name] = $day_value_updates[$account_name]
-        }
+            foreach ($account_name in $day_value_updates.Keys) {
+                $accounts[$account_name] = $day_value_updates[$account_name]
+            }
 
-        $day_value_updates = @{}
+            $day_value_updates = @{}
+
+            $account_name = ""
+            $account_last_logon = ""
+            $account_last_logon_timestamp = ""
+            $account_latest_timestamp = ""
+        }
     }
     catch {
         Write-Host "ERROR within $($DomainController.HostName) query: $_" -ForegroundColor Red
