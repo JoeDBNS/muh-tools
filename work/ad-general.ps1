@@ -15,7 +15,7 @@ Get-ADGroup -Filter {Name -like 'ES_SADLC_*'}
 Get-ADGroup -Filter {Name -like 'ES_SADLC_*'} | Select-Object Name
 
 # Get Groups associated with User
-Get-ADPrincipalGroupMembership __username__ | Select-Object Name
+Get-ADPrincipalGroupMembership __username__ | Select-Object Name | Sort-Object -property Name
 # or
 Get-ADUser __username__ -Properties memberof | Select-Object -Expand memberof
 
