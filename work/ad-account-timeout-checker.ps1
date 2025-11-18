@@ -8,9 +8,31 @@ foreach ($item in $account_list_json) {
 
 Import-Module ActiveDirectory
 
+Write-Host ""
+
 # Get all domain controllers in the domain
 $domain_controllers = Get-ADDomainController -Filter *
 $domain_controllers_count = $domain_controllers.Count
+
+$domain_controllers_active = @{}
+
+foreach ($i in 0..($domain_controllers_count-1)) {
+    $domain_controller = $domain_controllers[$i]
+
+    $dc_process = [Math]::Truncate((($i/$domain_controllers_count) * 100) * 100) / 100
+    Write-Host -NoNewLine "`rBuilding DC List: $dc_process% complete"
+
+    $domain_controller_connection_test = Test-Connection -TargetName $domain_controller.IPv4Address -Count 1 | Select-Object Status
+
+    if ($domain_controller_connection_test.Status -eq "Success") {
+        $domain_controllers_active[$domain_controller.Name] = $domain_controller
+    }
+}
+$domain_controllers_active_count = $domain_controllers_active.Count
+
+Write-Host -NoNewLine "`rBuilding DC List: 100% complete" -ForegroundColor Green
+
+Write-Host ""
 
 $default_last_login_span = -999999
 $accounts = @{}
@@ -29,20 +51,20 @@ $day_value_updates = @{}
 $datetime_now = Get-Date
 
 $current_domain_count = 1
-foreach ($domain_controller in $domain_controllers) {
+foreach ($domain_controller in $domain_controllers_active.Values) {
     $progress_string = ""
 
     foreach ($i in 1..$current_domain_count) {
         $progress_string += [char]0x25A0
     }
-    if ($domain_controllers_count - $current_domain_count -gt 0) {
-       foreach ($i in 1..($domain_controllers_count - $current_domain_count)) {
+    if ($domain_controllers_active_count - $current_domain_count -gt 0) {
+       foreach ($i in 1..($domain_controllers_active_count - $current_domain_count)) {
             $progress_string += [char]0x25A1
         }
     }
 
     Write-Host "`n`n"
-    Write-Host "$current_domain_count of $domain_controllers_count"
+    Write-Host "$current_domain_count of $domain_controllers_active_count"
     Write-Host $progress_string
     Write-Host "Querying Domain Controller: $($domain_controller.HostName)" -ForegroundColor Cyan
 
