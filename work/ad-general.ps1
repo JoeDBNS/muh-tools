@@ -8,7 +8,7 @@ Get-ADUser -Filter 'SamAccountName -like "*__username__*"' -Properties memberof,
 Get-ADUser -Filter 'SamAccountName -like "*__username__*"' -Properties memberof,Created | Select-Object Enabled,SamAccountName,Created,DistinguishedName
 Get-ADUser -Filter 'SamAccountName -like "*__username__*"' -Properties Created | Select-Object Created | Select-String  -Pattern "2025"
 Get-ADUser -Filter 'Enabled -eq "True"' -Properties memberof,Created | Select-Object Enabled,SamAccountName,Created,Name
-Get-ADUser -Filter 'SamAccountName -like "wattsc5"' -Properties memberof,Created | Select-Object Enabled,SamAccountName,Created,Name
+Get-ADUser -Filter 'SamAccountName -like "*__username__*"' -Properties memberof,Created | Select-Object Enabled,SamAccountName,Created,Name
 
 # Search for group by name
 Get-ADGroup -Filter {Name -like 'ES_SADLC_*'}
